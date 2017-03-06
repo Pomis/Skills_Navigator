@@ -10,7 +10,10 @@ router.post('/', (req, res, next) => {
 			} else {
 				global.db.query("SELECT * FROM Users WHERE Users.access_token = ?", [req.headers.authorization])
 					
-					.then(user => user[0]!=null)
+					.then(user => {
+						req.body.user_id = user[0].user_id
+						return user[0]!=null
+					})
 
 					.then(ok => {
 						if (ok)

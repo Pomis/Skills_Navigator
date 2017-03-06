@@ -59,8 +59,6 @@ router.post('/', (req, res, next) => {
       console.log(err)
       res.send(400, {error: err})
     })
-
-  //res.send(200, {access_token: "kek"})
 });
 
 module.exports = router;
