@@ -5,6 +5,9 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const mysql = require('promise-mysql');
+const nodemailer = require('nodemailer');
+const config = require('./config.json')
+
 
 
 
@@ -22,12 +25,20 @@ app.use(express.static(path.join(__dirname, 'public')));
 mysql.createConnection({
     host: 'localhost',
     port: '8889',
-    user: process.env.SNAVI_USER,
-    password: process.env.SNAVI_PASS,
-    database: process.env.SNAVI_DB
+    user: config.dbUser,
+    password: config.dbPass,
+    database: config.db
 })
 	.then(connection => global.db = connection)
 	.catch(err => console.log("DB auth problem: ${err}"))
+
+global.transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: config.mail,
+        pass: config.mailPass
+    }
+});
 
 app.use('/*', require('./middleware/token'))
 
@@ -55,7 +66,8 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  console.log(err)
+  //res.render('error');
 });
 
 module.exports = app;

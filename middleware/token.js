@@ -1,23 +1,29 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
 /* Проверка параметров */
 router.post('/', (req, res, next) => {
 	try {
-		if (req.headers.authorization != null) {
-			if (req.headers.authorization.length != 32) {
+		if (req.headers.authorization) {
+			if (req.headers.authorization.length != 40) {
 				res.send(400, "Маркер доступа неверной длины!")
 			} else {
-				new Promise((resolve, reject) => {
-					// check user in db
-					resolve(true)
+				global.db.query("SELECT * FROM Users WHERE Users.access_token = ?", [req.headers.authorization])
+					
+					.then(user => user[0]!=null)
 
-				})	.then(ok => ok? next(): reject())
-					.catch(err => res.send(401, "Не удалось авторизироваться"))
+					.then(ok => {
+						if (ok)
+							next()
+						else
+							throw "Неверные данные!"
+					})
+
+					.catch(err => res.send(401, err))
 			}
 		} 
-		
-		next()
+		else
+			next()
 	} catch (e) {
 		res.send(500, "Внутренняя ошибка сервера")
 	}
