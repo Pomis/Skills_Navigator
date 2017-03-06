@@ -47,13 +47,13 @@ router.post('/', (req, res, next) => {
           to: mail, 
           subject: 'Приветствую в системе Skills Navigator!', 
           text: 'Пожалуйста, подтвердите ваш почтовый адрес', 
-          html: 'Пожалуйста, подтвердите ваш почтовый адрес, перейдя по ссылке: http://localhost:9999/reg/='+access_token 
+          html: 'Пожалуйста, подтвердите ваш почтовый адрес, перейдя по ссылке: http://localhost:9999/reg/'+access_token 
       }
       global.transporter.sendMail(mailOptions)
       }
     })
 
-    .then(() => res.send(200, {access_token: "kek"}))
+    .then(() => res.send(200, {error: "Всё норм"}))
 
     .catch(err => {
       console.log(err)
