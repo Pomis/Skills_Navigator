@@ -4,6 +4,7 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const mysql = require('promise-mysql');
 
 
 
@@ -18,7 +19,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/*', require('./middleware/typecheck'))
+mysql.createConnection({
+    host: 'localhost',
+    port: '8889',
+    user: process.env.SNAVI_USER,
+    password: process.env.SNAVI_PASS,
+    database: process.env.SNAVI_DB
+})
+	.then(connection => global.db = connection)
+	.catch(err => console.log("DB auth problem: ${err}"))
+
+app.use('/*', require('./middleware/token'))
 
 //app.use('/', index);
 app.use('/auth', require('./routes/auth'));
